@@ -7,7 +7,7 @@
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
      
@@ -25,6 +25,7 @@
 	specialArgs= { inherit inputs; };
 	modules = [
 	  ./configuration.nix
+#    /home/d20/.config/home-manager/home.nix
     	];
 	};
     

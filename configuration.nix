@@ -41,7 +41,7 @@
   imports = [
     ./hardware-configuration.nix
     inputs.spicetify-nix.nixosModules.default
-    inputs.home-manager.nixosModules.home-manager
+    inputs.home-manager.nixosModules.default
   ];
 
 #    --Bootloader--    #
@@ -108,7 +108,7 @@
     shellAliases = {
       lf = "ls -ahls";
       edit = "sudo -e";
-      update = "sudo nixos-rebuild switch --flake .";
+      update = "sudo nixos-rebuild switch --flake . --upgrade";
     };
 
   };
@@ -119,6 +119,7 @@
       d20 = import ./home.nix;
     };
   };
+
 #    --programs.enable--    #
 
   programs.firefox.enable = true;
@@ -186,6 +187,7 @@ hardware.pulseaudio.enable = false;
       coreutils-full
       gnome-common
       desktop-file-utils
+      nh
 #    --shell--    #
       oh-my-zsh
       thefuck
