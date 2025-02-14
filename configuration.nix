@@ -91,35 +91,12 @@
       colorScheme = "default";
     };
 
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
-    ohMyZsh = {
-      enable = true;
-      plugins = [
-        "git"
-        "thefuck"
-        "z"
-      ];
-      theme = "agnoster";
-    };
-
-    shellAliases = {
-      ll = "ls -ahl";
-      edit = "sudo -e";
-      swi = "nh os switch ~/os_conf";
-      update = "nh os switch ~/os_conf -u";
-    };
-
-  };
-
-  programs.fish.enable = true;
-
   #    --programs.enable--    #
 
   # programs.firefox.enable = true;
+
+  programs.fish.enable = true;
+
   environment.variables.TERMINAL = "ghostty";
 
   services.logmein-hamachi.enable = true;
@@ -187,9 +164,6 @@
       desktop-file-utils
       nh
       #    --shell--    #
-      oh-my-zsh
-      thefuck
-      zsh-z
       fishPlugins.done
       fishPlugins.fzf-fish
       fishPlugins.forgit
