@@ -41,11 +41,11 @@ sudo nixos-rebuild switch --flake https://github.com/damidorg/nixos-conf.git
 
 #### fish 
 plugins:
-	done
-	fzf
-	forgit
-	hydro
-	grc
+	done,
+	fzf,
+	forgit,
+	hydro,
+	grc,
 and oh-may-fish
 
 #### gnome
