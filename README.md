@@ -3,6 +3,7 @@
 ```
 git clone https://github.com/damidorg/nixos-conf.git ~/nixos-conf
 cd ~/nixos-conf
+sudo cp /etc/nixos/hardware-configuration.nix ~/nixos-conf
 sudo nixos-rebuild switch --flake .
 
 ```
