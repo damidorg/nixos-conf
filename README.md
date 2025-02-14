@@ -1,7 +1,10 @@
 ### This is a NixOS configuration
 # how to install
 ```
-sudo nixos-rebuild switch --flake https://github.com/damidorg/nixos-conf.git
+git clone https://github.com/damidorg/nixos-conf.git
+cd ~/nixos-conf
+sudo nixos-rebuild switch --flake .
+
 ```
 #### System conf:
 	NVIDIA driver
@@ -41,11 +44,11 @@ sudo nixos-rebuild switch --flake https://github.com/damidorg/nixos-conf.git
 
 #### fish 
 plugins:
-	done
-	fzf
-	forgit
-	hydro
-	grc
+	done,
+	fzf,
+	forgit,
+	hydro,
+	grc,
 and oh-may-fish
 
 #### gnome
