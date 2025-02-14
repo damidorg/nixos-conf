@@ -2,6 +2,11 @@
   description = "A very basic flake";
 
   inputs = {
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
+    hyprland.url = "github:hyprwm/Hyprland";
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgsStable.url = "github:nixos/nixpkgs?ref=nixos-24.11";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
@@ -10,28 +15,31 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-     
-  };
-
-  outputs = { nixpkgs, spicetify-nix, ... } @ inputs: 
-  let
-	pkgs = nixpkgs.legacyPackages.x86_64-linux;
-	pkgsStable = inputs.nixpkgsStable.legacyPackages.x86_64-linux;
-	
-  in
-  {
-
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-	specialArgs= { inherit inputs; };
-	modules = [
-	  ./configuration.nix
-#    /home/d20/.config/home-manager/home.nix
-    	];
-	};
-    
-    devShells.x86_64-linux.default = pkgs.mkShell {
-	buildInputs = [ pkgs.neovim pkgsStable.vim ];
-	};
 
   };
+
+  outputs =
+    { nixpkgs, spicetify-nix, ... }@inputs:
+    let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      pkgsStable = inputs.nixpkgsStable.legacyPackages.x86_64-linux;
+
+    in
+    {
+
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./configuration.nix
+        ];
+      };
+
+      devShells.x86_64-linux.default = pkgs.mkShell {
+        buildInputs = [
+          pkgs.neovim
+          pkgsStable.vim
+        ];
+      };
+
+    };
 }

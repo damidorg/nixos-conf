@@ -2,23 +2,23 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
-  config, pkgs, inputs, ...
+  config,
+  pkgs,
+  inputs,
+  ...
 }:
 {
-#    --nvidia-driver--    #
+  #    --nvidia-driver--    #
   hardware.graphics = {
     enable = true;
   };
-
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
 
     modesetting.enable = true;
 
-    
     powerManagement.enable = true;
-
 
     powerManagement.finegrained = true;
 
@@ -28,7 +28,6 @@
 
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
-
   hardware.nvidia.prime = {
     offload = {
       enable = true;
@@ -37,23 +36,25 @@
     intelBusId = "PCI:0:2:0";
     nvidiaBusId = "PCI:1:0:0";
   };
-#    --System-conf--    #
+
+  #    --System-conf--    #
   imports = [
     ./hardware-configuration.nix
     inputs.spicetify-nix.nixosModules.default
     inputs.home-manager.nixosModules.default
+
   ];
 
-#    --Bootloader--    #
+  #    --Bootloader--    #
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-#    --netnetworking--    #
+  #    --netnetworking--    #
   networking.hostName = "nixos"; # Define your hostname.
 
   networking.networkmanager.enable = true;
-#    --time--    #
+  #    --time--    #
   time.timeZone = "Asia/Jerusalem";
-#    --language--    #
+  #    --language--    #
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -67,14 +68,14 @@
     LC_TELEPHONE = "en_IL";
     LC_TIME = "en_IL";
   };
-#    --programs-conf--    #
+  #    --programs-conf--    #
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
-  
+
   programs.spicetify =
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
@@ -89,13 +90,13 @@
       theme = spicePkgs.themes.default;
       colorScheme = "default";
     };
-    
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-    oh-my-zsh = {
+    ohMyZsh = {
       enable = true;
       plugins = [
         "git"
@@ -106,35 +107,32 @@
     };
 
     shellAliases = {
-      lf = "ls -ahls";
+      ll = "ls -ahl";
       edit = "sudo -e";
-      update = "sudo nixos-rebuild switch --flake . --upgrade";
+      swi = "nh os switch ~/os_conf";
+      update = "nh os switch ~/os_conf -u";
     };
 
   };
-  
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users = {
-      d20 = import ./home.nix;
-    };
-  };
 
-#    --programs.enable--    #
+  programs.fish.enable = true;
 
-  programs.firefox.enable = true;
+  #    --programs.enable--    #
+
+  # programs.firefox.enable = true;
+  environment.variables.TERMINAL = "ghostty";
 
   services.logmein-hamachi.enable = true;
-  
+
   services.xserver.displayManager.gdm.enable = true;
-  
+
   services.xserver.desktopManager.gnome.enable = true;
-  
+
   services.cloudflare-warp.enable = true;
 
   services.printing.enable = true;
 
-hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -149,14 +147,14 @@ hardware.pulseaudio.enable = false;
     #media-session.enable = true;
   };
 
-#    --user-d20--    #
-  users.defaultUserShell = pkgs.zsh;
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
+  #    --user-d20--    #
+  users.defaultUserShell = pkgs.fish;
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
   ];
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
-   users.users.d20 = {
+  users.users.d20 = {
     isNormalUser = true;
     description = "20";
     extraGroups = [
@@ -164,7 +162,7 @@ hardware.pulseaudio.enable = false;
       "wheel"
     ];
     packages = with pkgs; [
-#    --games--    #
+      #    --games--    #
       steam
       lutris
       qbittorrent
@@ -172,12 +170,12 @@ hardware.pulseaudio.enable = false;
       haguichi
       logmein-hamachi
       prismlauncher
-#    --must-have--    #
+      #    --must-have--    #
       wget
       curl
       unzip
       git
-#    --System--    #
+      #    --System--    #
       rose-pine-cursor
       pavucontrol
       easyeffects
@@ -188,20 +186,27 @@ hardware.pulseaudio.enable = false;
       gnome-common
       desktop-file-utils
       nh
-#    --shell--    #
+      #    --shell--    #
       oh-my-zsh
       thefuck
       zsh-z
-#    --programing--    #
+      fishPlugins.done
+      fishPlugins.fzf-fish
+      fishPlugins.forgit
+      fishPlugins.hydro
+      fzf
+      fishPlugins.grc
+      grc
+      oh-my-fish
+      #    --programing--    #
       rust-analyzer
-      nil
       nixd
       evil-helix
       nixfmt-rfc-style
       clang
       lldb
       rustup
-#    --other--    #
+      #    --other--    #
       cloudflare-warp
       ciscoPacketTracer8
       fastfetch
@@ -219,7 +224,9 @@ hardware.pulseaudio.enable = false;
       linssid
       btop
       kismet
-#    --gnomeExtensions--    #
+      vlc
+      firefox-beta
+      #    --gnomeExtensions--    #
       gnomeExtensions.blur-my-shell
       gnomeExtensions.user-themes
       gnomeExtensions.clipboard-history
@@ -228,14 +235,19 @@ hardware.pulseaudio.enable = false;
       gnomeExtensions.color-picker
       gnomeExtensions.forge
       gnomeExtensions.invert-window-color
+      gnomeExtensions.highlight-focus
+      gnomeExtensions.tiling-assistant
 
     ];
   };
-  services.xserver.excludePackages = [ pkgs.xterm ];
+  services.xserver.excludePackages = [
+    pkgs.xterm
+    pkgs.helix
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
-#    --gnome-sesettings--    #
+  #    --gnome-sesettings--    #
   environment.gnome.excludePackages = with pkgs; [
     orca
     evince
@@ -285,6 +297,25 @@ hardware.pulseaudio.enable = false;
     yelp
     #gnome-software
   ];
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-emoji
+    liberation_ttf
+    fira-code
+    fira-code-symbols
+    mplus-outline-fonts.githubRelease
+    dina-font
+    proggyfonts
+    wqy_zenhei
+  ];
+  services.xserver.desktopManager.gnome = {
+    extraGSettingsOverridePackages = [ pkgs.mutter ];
+    extraGSettingsOverrides = ''
+      [org.gnome.mutter]
+      experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
+    '';
+  };
 
   environment.systemPackages = with pkgs; [
 
