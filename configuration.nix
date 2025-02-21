@@ -46,8 +46,41 @@
   ];
 
   #    --Bootloader--    #
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    timeout = 5;
+
+    efi = {
+      efiSysMountPoint = "/boot";
+    };
+
+    grub = {
+      enable = true;
+
+      efiSupport = true;
+      efiInstallAsRemovable = true; # Otherwise /boot/EFI/BOOT/BOOTX64.EFI isn't generated
+      devices = [ "nodev" ];
+      extraEntriesBeforeNixOS = true;
+    };
+  };
+  boot.loader.grub.extraInstallCommands = ''
+    cat << EOF >> /boot/grub/grub.cfg
+
+      # Shutdown
+      menuentry "Shutdown" --class shutdown {
+        halt
+      }
+
+      # Reboot
+      menuentry "Reboot" --class restart{
+        reboot
+      }
+      EOF
+  '';
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "vimix";
+    footer = true;
+  };
   #    --netnetworking--    #
   networking.hostName = "nixos"; # Define your hostname.
 
@@ -130,6 +163,17 @@
     "nix-command"
     "flakes"
   ];
+  # configuration.nix
+  users.groups.kismet = { };
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="net", ACTION=="add", KERNEL=="wl*", GROUP="kismet", MODE="0660"
+  '';
+  boot.kernelModules = [
+    "cfg80211"
+    "mac80211"
+  ];
+
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   users.users.d20 = {
     isNormalUser = true;
@@ -137,6 +181,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "kismet"
     ];
     packages = with pkgs; [
       #    --games--    #
@@ -198,6 +243,8 @@
       linssid
       btop
       kismet
+      aircrack-ng
+      pcre
       vlc
       firefox-beta
       #    --gnomeExtensions--    #
@@ -283,14 +330,15 @@
     proggyfonts
     wqy_zenhei
   ];
-  services.xserver.desktopManager.gnome = {
-    extraGSettingsOverridePackages = [ pkgs.mutter ];
-    extraGSettingsOverrides = ''
-      [org.gnome.mutter]
-      experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
-    '';
-  };
-
+  /*
+    services.xserver.desktopManager.gnome = {
+      extraGSettingsOverridePackages = [ pkgs.mutter ];
+      extraGSettingsOverrides = ''
+        [org.gnome.mutter]
+        experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
+      '';
+    };
+  */
   environment.systemPackages = with pkgs; [
 
   ];

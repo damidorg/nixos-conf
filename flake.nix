@@ -15,11 +15,19 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    grub2-themes = {
+      url = "github:vinceliuice/grub2-themes";
+    };
 
   };
 
   outputs =
-    { nixpkgs, spicetify-nix, ... }@inputs:
+    {
+      nixpkgs,
+      spicetify-nix,
+      grub2-themes,
+      ...
+    }@inputs:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
       pkgsStable = inputs.nixpkgsStable.legacyPackages.x86_64-linux;
@@ -31,6 +39,7 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./configuration.nix
+          grub2-themes.nixosModules.default
         ];
       };
 
