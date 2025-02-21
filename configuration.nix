@@ -227,26 +227,27 @@
       rustup
       #    --other--    #
       cloudflare-warp
-      ciscoPacketTracer8
       fastfetch
       obsidian
       localsend
       libreoffice
       telegram-desktop
-      pinta
       discord-canary
-      obs-studio
       spicetify-cli
+      calibre
+      vlc
+      firefox-beta
+      #    --tools --    #
       ghostty
       nvitop
-      calibre
+      obs-studio
+      ciscoPacketTracer8
+      pinta
       linssid
       btop
       kismet
       aircrack-ng
       pcre
-      vlc
-      firefox-beta
       #    --gnomeExtensions--    #
       gnomeExtensions.blur-my-shell
       gnomeExtensions.user-themes
