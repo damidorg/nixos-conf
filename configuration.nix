@@ -244,7 +244,7 @@
       ciscoPacketTracer8
       pinta
       linssid
-      btop
+      btop-rocm
       kismet
       aircrack-ng
       pcre
