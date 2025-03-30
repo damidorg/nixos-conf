@@ -2,30 +2,26 @@
   description = "A very basic flake";
 
   inputs = {
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
-    hyprland.url = "github:hyprwm/Hyprland";
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgsStable.url = "github:nixos/nixpkgs?ref=nixos-24.11";
-    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
-    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
+      # Use the same nixpkgs instance as your system
       inputs.nixpkgs.follows = "nixpkgs";
     };
     grub2-themes = {
       url = "github:vinceliuice/grub2-themes";
     };
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
 
   };
 
   outputs =
     {
       nixpkgs,
-      spicetify-nix,
       grub2-themes,
+      home-manager,
       ...
     }@inputs:
     let
@@ -40,7 +36,10 @@
         modules = [
           ./configuration.nix
           grub2-themes.nixosModules.default
+          home-manager.nixosModules.default
+
         ];
+
       };
 
       devShells.x86_64-linux.default = pkgs.mkShell {

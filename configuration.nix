@@ -20,7 +20,7 @@
 
     powerManagement.enable = true;
 
-    powerManagement.finegrained = true;
+    powerManagement.finegrained = false;
 
     open = false;
 
@@ -29,10 +29,8 @@
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
   hardware.nvidia.prime = {
-    offload = {
-      enable = true;
-      enableOffloadCmd = true;
-    };
+    offload.enable = true;
+    offload.enableOffloadCmd = true;
     intelBusId = "PCI:0:2:0";
     nvidiaBusId = "PCI:1:0:0";
   };
@@ -40,9 +38,8 @@
   #    --System-conf--    #
   imports = [
     ./hardware-configuration.nix
-    inputs.spicetify-nix.nixosModules.default
     inputs.home-manager.nixosModules.default
-
+    inputs.spicetify-nix.nixosModules.default
   ];
 
   #    --Bootloader--    #
@@ -82,9 +79,10 @@
     footer = true;
   };
   #    --netnetworking--    #
-  networking.hostName = "nixos"; # Define your hostname.
-
+  networking.hostName = "nixos";
+  services.gnome.gnome-keyring.enable = true; # Optional: For credential storage
   networking.networkmanager.enable = true;
+
   #    --time--    #
   time.timeZone = "Asia/Jerusalem";
   #    --language--    #
@@ -106,22 +104,20 @@
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfersi
   };
-
   programs.spicetify =
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
     in
     {
       enable = true;
+      theme = spicePkgs.themes.default;
       enabledExtensions = with spicePkgs.extensions; [
         adblock
         hidePodcasts
         shuffle # shuffle+ (special characters are sanitized out of extension names)
       ];
-      theme = spicePkgs.themes.default;
-      colorScheme = "default";
     };
 
   #    --programs.enable--    #
@@ -143,6 +139,7 @@
   services.printing.enable = true;
 
   services.pulseaudio.enable = false;
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -183,89 +180,18 @@
       "wheel"
       "kismet"
     ];
-    packages = with pkgs; [
-      #    --games--    #
-      steam
-      lutris
-      qbittorrent
-      bottles
-      haguichi
-      logmein-hamachi
-      prismlauncher
-      #    --must-have--    #
-      wget
-      curl
-      unzip
-      git
-      #    --System--    #
-      rose-pine-cursor
-      pavucontrol
-      easyeffects
-      home-manager
-      dconf-editor
-      gnome-tweaks
-      coreutils-full
-      gnome-common
-      desktop-file-utils
-      nh
-      #    --shell--    #
-      fishPlugins.done
-      fishPlugins.fzf-fish
-      fishPlugins.forgit
-      fishPlugins.hydro
-      fzf
-      fishPlugins.grc
-      grc
-      oh-my-fish
-      #    --programing--    #
-      rust-analyzer
-      nixd
-      evil-helix
-      nixfmt-rfc-style
-      clang
-      lldb
-      rustup
-      #    --other--    #
-      cloudflare-warp
-      fastfetch
-      obsidian
-      localsend
-      libreoffice
-      telegram-desktop
-      discord-canary
-      spicetify-cli
-      calibre
-      vlc
-      firefox-beta
-      #    --tools --    #
-      ghostty
-      nvitop
-      obs-studio
-      ciscoPacketTracer8
-      pinta
-      linssid
-      btop-rocm
-      kismet
-      aircrack-ng
-      pcre
-      #    --gnomeExtensions--    #
-      gnomeExtensions.blur-my-shell
-      gnomeExtensions.user-themes
-      gnomeExtensions.clipboard-history
-      gnomeExtensions.gsconnect
-      gnomeExtensions.appindicator
-      gnomeExtensions.color-picker
-      gnomeExtensions.forge
-      gnomeExtensions.invert-window-color
-      gnomeExtensions.highlight-focus
-      gnomeExtensions.tiling-assistant
-
-    ];
   };
+
   services.xserver.excludePackages = [
     pkgs.xterm
     pkgs.helix
   ];
+  #    --tailscale--    #
+  services.tailscale.enable = true;
+  networking.firewall = {
+    checkReversePath = "loose"; # Required for Tailscale
+    trustedInterfaces = [ "tailscale0" ]; # Trust Tailscale interface
+  };
 
   nixpkgs.config.allowUnfree = true;
 
@@ -319,6 +245,26 @@
     yelp
     #gnome-software
   ];
+  # configuration.nix
+
+  services.xserver.desktopManager.gnome = {
+    extraGSettingsOverridePackages = [ pkgs.mutter ];
+    extraGSettingsOverrides = ''
+      [org.gnome.mutter]
+      experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
+    '';
+  };
+  environment.sessionVariables = {
+    XCURSOR_THEME = "rose-pine-cursor";
+    XCURSOR_PATH = [
+      #  "/run/current-system/sw/share/icons"
+      #  "~/.icons"
+      #  "~/.local/share/icons"
+      "${pkgs.rose-pine-cursor}/share/icons" # Path to your cursor package
+      "$HOME/.icons"
+      "/usr/share/icons"
+    ];
+  };
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
@@ -329,18 +275,93 @@
     mplus-outline-fonts.githubRelease
     dina-font
     proggyfonts
-    wqy_zenhei
   ];
-  /*
-    services.xserver.desktopManager.gnome = {
-      extraGSettingsOverridePackages = [ pkgs.mutter ];
-      extraGSettingsOverrides = ''
-        [org.gnome.mutter]
-        experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
-      '';
-    };
-  */
+
   environment.systemPackages = with pkgs; [
+
+    #    --games--    #
+    steam
+    lutris
+    qbittorrent
+    bottles
+    haguichi
+    logmein-hamachi
+    #    --must-have--    #
+    wget
+    curl
+    unzip
+    git
+    #    --System--    #
+    rose-pine-cursor
+    pavucontrol
+    easyeffects
+    home-manager
+    dconf-editor
+    gnome-tweaks
+    coreutils-full
+    gnome-common
+    desktop-file-utils
+    nh
+    tailscale
+    xsettingsd
+    xorg.xrdb
+    #    --shell--    #
+    fishPlugins.done
+    fishPlugins.fzf-fish
+    fishPlugins.forgit
+    fishPlugins.hydro
+    fzf
+    fishPlugins.grc
+    grc
+    oh-my-fish
+    #    --programing--    #
+    rust-analyzer
+    nixd
+    evil-helix
+    nixfmt-rfc-style
+    clang
+    lldb
+    rustup
+    nodejs_23
+    tree-sitter-grammars.tree-sitter-rust
+    tree-sitter
+    #    --other--    #
+    cloudflare-warp
+    fastfetch
+    obsidian
+    localsend
+    libreoffice
+    telegram-desktop
+    discord-canary
+    calibre
+    vlc
+    firefox
+    #    --tools --    #
+    ghostty
+    nvitop
+    obs-studio
+    ciscoPacketTracer8
+    pinta
+    linssid
+    btop-rocm
+    kismet
+    aircrack-ng
+    pcre
+    audacity
+    reaper
+    spicetify-cli
+    jdk17
+    #    --gnomeExtensions--    #
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.user-themes
+    gnomeExtensions.clipboard-history
+    gnomeExtensions.gsconnect
+    gnomeExtensions.appindicator
+    gnomeExtensions.color-picker
+    gnomeExtensions.forge
+    gnomeExtensions.invert-window-color
+    gnomeExtensions.highlight-focus
+    gnomeExtensions.tiling-assistant
 
   ];
 
