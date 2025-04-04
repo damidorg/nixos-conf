@@ -272,7 +272,6 @@
 
     #    --games--    #
     steam
-    lutris
     qbittorrent
     bottles
     haguichi
@@ -321,8 +320,6 @@
     libreoffice
     telegram-desktop
     discord-canary
-    calibre
-    vlc
     firefox
     #    --tools --    #
     ghostty
@@ -330,15 +327,12 @@
     obs-studio
     ciscoPacketTracer8
     pinta
-    linssid
-    btop-rocm
     kismet
     aircrack-ng
     pcre
     audacity
     reaper
     spicetify-cli
-    jdk17
     #    --gnomeExtensions--    #
     gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
@@ -346,7 +340,6 @@
     gnomeExtensions.gsconnect
     gnomeExtensions.appindicator
     gnomeExtensions.color-picker
-    gnomeExtensions.forge
     gnomeExtensions.invert-window-color
     gnomeExtensions.highlight-focus
     gnomeExtensions.tiling-assistant
