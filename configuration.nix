@@ -286,14 +286,14 @@
     rose-pine-cursor
     pavucontrol
     easyeffects
-    home-manager
-    dconf-editor
     gnome-tweaks
     coreutils-full
     gnome-common
     desktop-file-utils
     nh
     tailscale
+    rar
+    rar2fs
     #    --shell--    #
     fishPlugins.done
     fishPlugins.fzf-fish
