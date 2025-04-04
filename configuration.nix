@@ -1,6 +1,3 @@
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 {
   config,
   pkgs,
@@ -38,7 +35,6 @@
   #    --System-conf--    #
   imports = [
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.default
     inputs.spicetify-nix.nixosModules.default
   ];
 
@@ -79,7 +75,7 @@
     footer = true;
   };
   #    --netnetworking--    #
-  networking.hostName = "nixos";
+  networking.hostName = "damidorg-nix";
   services.gnome.gnome-keyring.enable = true; # Optional: For credential storage
   networking.networkmanager.enable = true;
 
@@ -141,27 +137,24 @@
   services.pulseaudio.enable = false;
 
   security.rtkit.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
 
   #    --user-d20--    #
   users.defaultUserShell = pkgs.fish;
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
-  # configuration.nix
-  users.groups.kismet = { };
 
   services.udev.extraRules = ''
     SUBSYSTEM=="net", ACTION=="add", KERNEL=="wl*", GROUP="kismet", MODE="0660"
@@ -172,13 +165,12 @@
   ];
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
-  users.users.d20 = {
+  users.users.damidorg = {
     isNormalUser = true;
-    description = "20";
+    description = "👌";
     extraGroups = [
       "networkmanager"
       "wheel"
-      "kismet"
     ];
   };
 
@@ -245,8 +237,7 @@
     yelp
     #gnome-software
   ];
-  # configuration.nix
-
+ 
   services.xserver.desktopManager.gnome = {
     extraGSettingsOverridePackages = [ pkgs.mutter ];
     extraGSettingsOverrides = ''
@@ -254,7 +245,7 @@
       experimental-features=['scale-monitor-framebuffer', 'variable-refresh-rate', 'kms-modifiers']
     '';
   };
-  environment.sessionVariables = {
+ /* environment.sessionVariables = {
     XCURSOR_THEME = "rose-pine-cursor";
     XCURSOR_PATH = [
       #  "/run/current-system/sw/share/icons"
@@ -264,7 +255,7 @@
       "$HOME/.icons"
       "/usr/share/icons"
     ];
-  };
+  }; */
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
@@ -303,8 +294,6 @@
     desktop-file-utils
     nh
     tailscale
-    xsettingsd
-    xorg.xrdb
     #    --shell--    #
     fishPlugins.done
     fishPlugins.fzf-fish
@@ -322,7 +311,6 @@
     clang
     lldb
     rustup
-    nodejs_23
     tree-sitter-grammars.tree-sitter-rust
     tree-sitter
     #    --other--    #
