@@ -4,11 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgsStable.url = "github:nixos/nixpkgs?ref=nixos-24.11";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      # Use the same nixpkgs instance as your system
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     grub2-themes = {
       url = "github:vinceliuice/grub2-themes";
     };
@@ -21,7 +16,6 @@
     {
       nixpkgs,
       grub2-themes,
-      home-manager,
       ...
     }@inputs:
     let
@@ -36,17 +30,9 @@
         modules = [
           ./configuration.nix
           grub2-themes.nixosModules.default
-          home-manager.nixosModules.default
 
         ];
 
-      };
-
-      devShells.x86_64-linux.default = pkgs.mkShell {
-        buildInputs = [
-          pkgs.neovim
-          pkgsStable.vim
-        ];
       };
 
     };
